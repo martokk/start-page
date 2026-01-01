@@ -1,0 +1,11 @@
+services:
+  start-page:
+    build: .
+    container_name: start-page
+    ports:
+      - "8080:80"
+    restart: unless-stopped
+    volumes:
+      - ./index.html:/usr/share/nginx/html/index.html:ro
+      - ./styles.css:/usr/share/nginx/html/styles.css:ro
+      - ./app.js:/usr/share/nginx/html/app.js:ro
