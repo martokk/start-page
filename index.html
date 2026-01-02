@@ -3,12 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Start Page</title>
+    <title>Start Page - Zen Mode</title>
     <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
 </head>
 <body>
     <div id="storage-warning" class="storage-warning hidden">
-        ⚠️ LocalStorage usage is high. Consider clearing read items to free up space.
+        ⚠️ LocalStorage usage is high.
     </div>
 
     <div id="app" class="app-container">
@@ -16,22 +17,26 @@
         </div>
         
         <div class="add-column-btn">
-            <button id="add-column-btn" class="btn-add">+</button>
+            <button id="add-column-btn" class="btn-add">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                    <line x1="12" y1="5" x2="12" y2="19"></line>
+                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                </svg>
+            </button>
         </div>
     </div>
-
 
     <div id="add-modal" class="modal hidden">
         <div class="modal-content">
             <div class="modal-header">
-                <h2>Add Subreddit</h2>
+                <h2>Add Feed</h2>
                 <button id="modal-close" class="modal-close">&times;</button>
             </div>
             <div class="modal-body">
                 <input 
                     type="text" 
                     id="subreddit-input" 
-                    placeholder="Enter subreddit name (e.g., programming)"
+                    placeholder="subreddit name..."
                     autocomplete="off"
                 >
                 <div class="modal-actions">
