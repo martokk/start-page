@@ -146,6 +146,14 @@ body {
     color: #666;
 }
 
+.item-link {
+    display: flex;
+    gap: 12px;
+    text-decoration: none;
+    color: inherit;
+    flex: 1;
+}
+
 .item-content {
     flex: 1;
     display: flex;

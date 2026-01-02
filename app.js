@@ -156,7 +156,6 @@ const Render = {
         const itemEl = document.createElement('div');
         itemEl.className = 'item';
         itemEl.dataset.itemId = item.id;
-        itemEl.dataset.url = item.url;
 
         let thumbnailHtml;
         if (item.thumbnail && item.thumbnail.startsWith('http')) {
@@ -166,14 +165,16 @@ const Render = {
         }
 
         itemEl.innerHTML = `
-            ${thumbnailHtml}
-            <div class="item-content">
-                <div class="item-title">${item.title}</div>
-                <div class="item-meta">
-                    <span class="item-score">↑${item.score}</span>
-                    <span class="item-time">${this.formatTimeAgo(item.created)}</span>
+            <a href="${item.url}" target="_blank" rel="noopener noreferrer" class="item-link">
+                ${thumbnailHtml}
+                <div class="item-content">
+                    <div class="item-title">${item.title}</div>
+                    <div class="item-meta">
+                        <span class="item-score">↑${item.score}</span>
+                        <span class="item-time">${this.formatTimeAgo(item.created)}</span>
+                    </div>
                 </div>
-            </div>
+            </a>
         `;
 
         return itemEl;
@@ -281,8 +282,11 @@ const Render = {
 const Events = {
     init() {
         document.addEventListener('click', (e) => {
-            if (e.target.closest('.item')) {
-                this.handleItemClick(e.target.closest('.item'));
+            if (e.target.closest('.item-link')) {
+                const itemEl = e.target.closest('.item');
+                if (itemEl) {
+                    this.handleItemClick(itemEl);
+                }
             }
 
             if (e.target.classList.contains('btn-mark-read')) {
@@ -295,6 +299,17 @@ const Events = {
 
             if (e.target.classList.contains('btn-remove')) {
                 this.handleRemoveColumn(e.target.dataset.columnId);
+            }
+        });
+
+        document.addEventListener('auxclick', (e) => {
+            if (e.button === 1) {
+                if (e.target.closest('.item-link')) {
+                    const itemEl = e.target.closest('.item');
+                    if (itemEl) {
+                        this.handleItemClick(itemEl);
+                    }
+                }
             }
         });
 
@@ -311,10 +326,7 @@ const Events = {
 
     handleItemClick(itemEl) {
         const itemId = itemEl.dataset.itemId;
-        const url = itemEl.dataset.url;
-
         Storage.addReadItem(itemId);
-        window.open(url, '_blank');
         itemEl.style.display = 'none';
     },
 
