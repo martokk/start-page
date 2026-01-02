@@ -252,6 +252,27 @@ const Render = {
         }
     },
 
+    renderAddButton() {
+        const btnContainer = document.createElement('div');
+        btnContainer.className = 'add-column-btn';
+        btnContainer.innerHTML = `
+            <button id="add-column-btn" class="btn-add">
+                <svg
+                    width="24"
+                    height="24"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.5"
+                >
+                    <line x1="12" y1="5" x2="12" y2="19"></line>
+                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                </svg>
+            </button>
+        `;
+        return btnContainer;
+    },
+
     async renderApp() {
         const container = document.getElementById('columns-container');
         container.innerHTML = '';
@@ -264,7 +285,12 @@ const Render = {
             : columns;
 
         if (orderedColumns.length === 0) {
-            container.innerHTML = '<div style="padding: 20px; color: #666;">Click + to add your first subreddit</div>';
+            const emptyState = document.createElement('div');
+            emptyState.style.padding = '20px';
+            emptyState.style.color = '#666';
+            emptyState.textContent = 'Click + to add your first subreddit';
+            container.appendChild(emptyState);
+            container.appendChild(this.renderAddButton());
             return;
         }
 
@@ -272,6 +298,8 @@ const Render = {
             const columnEl = this.renderColumn(column);
             container.appendChild(columnEl);
         });
+
+        container.appendChild(this.renderAddButton());
 
         orderedColumns.forEach(column => {
             this.renderColumnItems(column.id);
@@ -453,14 +481,18 @@ const DragDrop = {
 
 const Modal = {
     init() {
-        const addBtn = document.getElementById('add-column-btn');
         const modal = document.getElementById('add-modal');
         const closeBtn = document.getElementById('modal-close');
         const cancelBtn = document.getElementById('modal-cancel');
         const submitBtn = document.getElementById('modal-submit');
         const input = document.getElementById('subreddit-input');
 
-        addBtn.addEventListener('click', () => this.open());
+        document.addEventListener('click', (e) => {
+            if (e.target.closest('#add-column-btn')) {
+                this.open();
+            }
+        });
+
         closeBtn.addEventListener('click', () => this.close());
         cancelBtn.addEventListener('click', () => this.close());
         submitBtn.addEventListener('click', () => this.submit());
