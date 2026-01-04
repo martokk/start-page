@@ -247,6 +247,15 @@ const Render = {
                 const itemEl = this.renderItem(item);
                 columnBodyEl.appendChild(itemEl);
             });
+
+            const footerEl = document.createElement('div');
+            footerEl.className = 'column-footer';
+            footerEl.innerHTML = `
+                <button class="btn-mark-read-footer btn-mark-read" data-column-id="${columnId}">
+                    Mark All Read ✓
+                </button>
+            `;
+            columnBodyEl.appendChild(footerEl);
         } catch (error) {
             columnBodyEl.innerHTML = `<div style="text-align: center; padding: 20px; color: #ff6b6b;">Error: ${error.message}</div>`;
         }

@@ -344,3 +344,38 @@ body {
     color: var(--text-secondary);
 }
 .btn-secondary:hover { color: var(--text-primary); }
+
+/* Footer Button Styles */
+.column-footer {
+    padding: 10px 24px 20px;
+    display: flex;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+    border-top: 1px solid transparent;
+}
+
+.column-footer:hover {
+    opacity: 1;
+    border-top-color: var(--border-color);
+}
+
+.btn-mark-read-footer {
+    width: 100%;
+    background: transparent;
+    border: 1px solid var(--border-color);
+    color: var(--text-secondary);
+    padding: 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-family: var(--font-stack);
+    font-size: 13px;
+    transition: all 0.2s;
+    font-weight: 500;
+}
+
+.btn-mark-read-footer:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: var(--text-primary);
+    border-color: rgba(255, 255, 255, 0.3);
+}
