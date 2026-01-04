@@ -306,6 +306,7 @@ Maintain consistency with existing dark theme:
 ❌ **Don't** break existing localStorage data structure
 ❌ **Don't** make API calls without caching
 ❌ **Don't** forget to test drag-and-drop functionality after DOM changes
+❌ **Don't** clear LocalStorage (e.g. localStorage.clear()) during automated testing or debugging; it destroys user data that cannot be recovered
 
 ### Browser Compatibility
 
