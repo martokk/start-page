@@ -15,6 +15,7 @@ This is a lightweight, dependency-free start page for aggregating Reddit feeds.
 ## Build, Lint, and Test Commands
 
 ### Local Development
+
 ```bash
 # Serve locally (Python)
 python -m http.server 8080
@@ -23,6 +24,7 @@ python -m http.server 8080
 ```
 
 ### Docker
+
 ```bash
 # Build and start
 docker-compose up -d
@@ -38,15 +40,18 @@ docker-compose up -d --build
 ```
 
 ### Testing
+
 **NO test framework exists.** All testing is manual in browser.
 
 To test changes:
+
 1. Serve locally or rebuild Docker container
 2. Open browser to http://localhost:8080
 3. Open DevTools Console for errors
 4. Test features manually (add column, drag/drop, mark read, etc.)
 
 ### Linting
+
 **NO linter configured.** Follow the style guide below manually.
 
 ---
@@ -73,26 +78,36 @@ To test changes:
 ### JavaScript (app.js)
 
 #### Module Organization
+
 - Use **object-based namespacing** (not ES6 modules)
 - Group related functions into namespace objects
 
 ```javascript
 // ✅ CORRECT - Namespace pattern used throughout
 const Storage = {
-    getColumns() { /* ... */ },
-    saveColumns(columns) { /* ... */ }
+  getColumns() {
+    /* ... */
+  },
+  saveColumns(columns) {
+    /* ... */
+  },
 };
 
 const RedditAPI = {
-    fetchSubreddit(subreddit) { /* ... */ }
+  fetchSubreddit(subreddit) {
+    /* ... */
+  },
 };
 
 // ❌ WRONG - Don't use ES6 modules
-export const getColumns = () => { /* ... */ };
-import { getColumns } from './storage.js';
+export const getColumns = () => {
+  /* ... */
+};
+import { getColumns } from "./storage.js";
 ```
 
 #### Constants
+
 - Define at **top of file**
 - Use **UPPERCASE_WITH_UNDERSCORES**
 - Group related constants in objects when appropriate
@@ -100,8 +115,8 @@ import { getColumns } from './storage.js';
 ```javascript
 // ✅ CORRECT
 const STORAGE_KEYS = {
-    COLUMNS: 'startpage_columns',
-    READ: 'startpage_read'
+  COLUMNS: "startpage_columns",
+  READ: "startpage_read",
 };
 const CACHE_DURATION = 2 * 60 * 60 * 1000;
 
@@ -111,17 +126,18 @@ const cacheTime = 7200000;
 
 #### Naming Conventions
 
-| Type | Convention | Example |
-|------|------------|---------|
-| Namespace objects | PascalCase | `Storage`, `RedditAPI`, `Render` |
-| Functions | camelCase | `fetchSubreddit`, `renderItem` |
-| Variables | camelCase | `readItems`, `columnId` |
-| DOM elements | camelCase + `El` suffix | `itemEl`, `columnBodyEl`, `containerEl` |
-| Constants | UPPERCASE_SNAKE_CASE | `STORAGE_KEYS`, `CACHE_DURATION` |
-| Event handlers | `handle` + action | `handleItemClick`, `handleRefresh` |
-| Boolean flags | Prefix with `is`/`has`/`should` | `isValid`, `hasItems`, `shouldRefresh` |
+| Type              | Convention                      | Example                                 |
+| ----------------- | ------------------------------- | --------------------------------------- |
+| Namespace objects | PascalCase                      | `Storage`, `RedditAPI`, `Render`        |
+| Functions         | camelCase                       | `fetchSubreddit`, `renderItem`          |
+| Variables         | camelCase                       | `readItems`, `columnId`                 |
+| DOM elements      | camelCase + `El` suffix         | `itemEl`, `columnBodyEl`, `containerEl` |
+| Constants         | UPPERCASE_SNAKE_CASE            | `STORAGE_KEYS`, `CACHE_DURATION`        |
+| Event handlers    | `handle` + action               | `handleItemClick`, `handleRefresh`      |
+| Boolean flags     | Prefix with `is`/`has`/`should` | `isValid`, `hasItems`, `shouldRefresh`  |
 
 #### Functions
+
 - Prefer **arrow functions** for callbacks and simple functions
 - Use **async/await** for asynchronous code (not `.then()`)
 - Keep functions focused and small
@@ -144,6 +160,7 @@ fetch(url).then(res => res.json()).then(data => /* ... */);
 ```
 
 #### Error Handling
+
 - Always wrap async operations in **try/catch**
 - Log errors with **console.error** (include context)
 - Rethrow errors unless you can meaningfully recover
@@ -152,19 +169,20 @@ fetch(url).then(res => res.json()).then(data => /* ... */);
 ```javascript
 // ✅ CORRECT
 try {
-    const items = await RedditAPI.fetchSubreddit(column.subreddit, column.sort, column.timeframe);
-    // ... render items
+  const items = await RedditAPI.fetchSubreddit(column.subreddit, column.sort, column.timeframe);
+  // ... render items
 } catch (error) {
-    columnBodyEl.innerHTML = `<div style="text-align: center; padding: 20px; color: #ff6b6b;">Error: ${error.message}</div>`;
+  columnBodyEl.innerHTML = `<div style="text-align: center; padding: 20px; color: #ff6b6b;">Error: ${error.message}</div>`;
 }
 
 // ❌ WRONG - Silent failures
 try {
-    await fetch(url);
-} catch (e) {}  // Never do this!
+  await fetch(url);
+} catch (e) {} // Never do this!
 ```
 
 #### DOM Manipulation
+
 - Use **vanilla DOM APIs** (no jQuery)
 - Cache DOM queries in variables ending with `El`
 - Use **template literals** for HTML generation
@@ -172,10 +190,10 @@ try {
 
 ```javascript
 // ✅ CORRECT - Event delegation
-document.addEventListener('click', (e) => {
-    if (e.target.classList.contains('btn-refresh')) {
-        this.handleRefresh(e.target.dataset.columnId);
-    }
+document.addEventListener("click", (e) => {
+  if (e.target.classList.contains("btn-refresh")) {
+    this.handleRefresh(e.target.dataset.columnId);
+  }
 });
 
 // ✅ CORRECT - Template literals for HTML
@@ -187,12 +205,13 @@ itemEl.innerHTML = `
 `;
 
 // ❌ WRONG - Individual listeners
-document.querySelectorAll('.btn-refresh').forEach(btn => {
-    btn.addEventListener('click', /* ... */);
+document.querySelectorAll(".btn-refresh").forEach((btn) => {
+  btn.addEventListener("click" /* ... */);
 });
 ```
 
 #### Data Attributes
+
 - Use `data-*` attributes to store metadata on DOM elements
 - Access via `element.dataset.propertyName`
 
@@ -202,10 +221,11 @@ columnEl.dataset.columnId = column.id;
 const columnId = e.target.dataset.columnId;
 
 // ❌ WRONG
-columnEl.setAttribute('id', column.id);  // Don't overload 'id' for data
+columnEl.setAttribute("id", column.id); // Don't overload 'id' for data
 ```
 
 #### LocalStorage
+
 - Always parse/stringify JSON
 - Handle missing keys gracefully (return defaults)
 - Check storage usage proactively
@@ -226,6 +246,7 @@ getColumns() {
 ### CSS (styles.css)
 
 #### Conventions
+
 - Use **kebab-case** for class names
 - Group related styles together
 - Follow **mobile-first** approach (this app is desktop-focused, but be responsive)
@@ -234,27 +255,28 @@ getColumns() {
 ```css
 /* ✅ CORRECT */
 .column-header {
-    padding: 15px;
-    border-bottom: 1px solid #333;
+  padding: 15px;
+  border-bottom: 1px solid #333;
 }
 
 /* ❌ WRONG */
 .ColumnHeader {
-    padding: 15px;
+  padding: 15px;
 }
 ```
 
 #### Color Palette
+
 Maintain consistency with existing dark theme:
 
-| Element | Color | Hex |
-|---------|-------|-----|
-| Background | Dark gray | `#1a1a1a` |
-| Cards | Medium gray | `#242424` |
-| Borders | Border gray | `#333` |
-| Text | Light gray | `#e0e0e0` |
-| Accent | Orange | `#ff6b35` |
-| Muted text | Gray | `#888` |
+| Element    | Color       | Hex       |
+| ---------- | ----------- | --------- |
+| Background | Dark gray   | `#1a1a1a` |
+| Cards      | Medium gray | `#242424` |
+| Borders    | Border gray | `#333`    |
+| Text       | Light gray  | `#e0e0e0` |
+| Accent     | Orange      | `#ff6b35` |
+| Muted text | Gray        | `#888`    |
 
 ### HTML (index.html)
 
@@ -277,6 +299,7 @@ Maintain consistency with existing dark theme:
 ### Common Tasks
 
 #### Adding a New Feature
+
 1. Identify which namespace object it belongs to (Storage, RedditAPI, Render, Events, etc.)
 2. Add function to appropriate namespace
 3. Hook up event listeners if needed (in Events.init())
@@ -284,12 +307,14 @@ Maintain consistency with existing dark theme:
 5. Test manually in browser
 
 #### Modifying Styles
+
 1. Find existing CSS rules (everything is in styles.css)
 2. Follow existing naming conventions
 3. Maintain dark theme colors
 4. Test responsive behavior
 
 #### API Changes
+
 - All Reddit API logic lives in `RedditAPI` namespace
 - Respect 2-hour cache (don't spam Reddit's API)
 - Handle errors gracefully (network issues, rate limits)
@@ -313,6 +338,7 @@ Maintain consistency with existing dark theme:
 Target: **Modern browsers only** (Chrome, Firefox, Safari, Edge)
 
 Required features:
+
 - ES6 (arrow functions, template literals, const/let, async/await)
 - LocalStorage
 - Fetch API
@@ -325,22 +351,26 @@ No need for polyfills or IE11 support.
 ## Debugging
 
 ### Console Errors
+
 Open DevTools Console and look for:
+
 - Reddit API errors (network, rate limiting)
 - LocalStorage quota exceeded
 - JavaScript runtime errors
 
 ### Common Issues
+
 - **Posts not loading**: Check Network tab for Reddit API responses
 - **Drag-and-drop broken**: Ensure `.column` class and draggable attribute present
 - **Storage warning**: LocalStorage near 5MB limit, clear read items
 
 ### Useful Debug Commands
+
 ```javascript
 // In browser console:
-localStorage.clear()  // Reset everything
-console.log(Storage.getColumns())  // Inspect columns
-console.log(Storage.getReadItems().length)  // Count read items
+localStorage.clear(); // Reset everything
+console.log(Storage.getColumns()); // Inspect columns
+console.log(Storage.getReadItems().length); // Count read items
 ```
 
 ---
@@ -348,10 +378,12 @@ console.log(Storage.getReadItems().length)  // Count read items
 ## Deployment
 
 Changes automatically reflect when:
+
 - **Local dev**: Refresh browser
 - **Docker**: Volumes are mounted, so edit source files and refresh browser (no rebuild needed)
 
 Full rebuild only needed if:
+
 - Dockerfile changes
 - nginx.conf changes
 

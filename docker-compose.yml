@@ -3,9 +3,32 @@ services:
     build: .
     container_name: start-page
     ports:
-      - "8080:80"
+      - "1111:3000"
     restart: unless-stopped
+    depends_on:
+      - postgres
+    environment:
+      - STARTPAGE_POSTGRES_HOST=postgres
+      - STARTPAGE_POSTGRES_PORT=5432
+      - STARTPAGE_POSTGRES_USER=startpage
+      - STARTPAGE_POSTGRES_PASSWORD=CHANGE_ME
+      - STARTPAGE_POSTGRES_DB=startpage
     volumes:
-      - ./index.html:/usr/share/nginx/html/index.html:ro
-      - ./styles.css:/usr/share/nginx/html/styles.css:ro
-      - ./app.js:/usr/share/nginx/html/app.js:ro
+      - ./server/server.js:/app/server.js:ro
+      - ./index.html:/app/public/index.html:ro
+      - ./styles.css:/app/public/styles.css:ro
+      - ./app.js:/app/public/app.js:ro
+
+  postgres:
+    image: postgres:15-alpine
+    container_name: start-page-db
+    restart: unless-stopped
+    environment:
+      - POSTGRES_USER=startpage
+      - POSTGRES_PASSWORD=CHANGE_ME
+      - POSTGRES_DB=startpage
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:

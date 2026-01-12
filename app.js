@@ -7,37 +7,77 @@ const STORAGE_KEYS = {
 
 const CACHE_DURATION = 2 * 60 * 60 * 1000;
 const STORAGE_WARNING_THRESHOLD = 0.8;
+const API_BASE = '/api/storage';
+
+const API = {
+    async get(key) {
+        try {
+            const res = await fetch(`${API_BASE}/${key}`);
+            if (!res.ok) throw new Error('API Error');
+            return await res.json();
+        } catch (e) {
+            console.error('Failed to load from API:', e);
+            return null;
+        }
+    },
+
+    async save(key, value) {
+        try {
+            await fetch(`${API_BASE}/${key}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(value)
+            });
+        } catch (e) {
+            console.error('Failed to save to API:', e);
+        }
+    }
+};
 
 const Storage = {
+    state: {
+        columns: [],
+        readItems: [],
+        order: []
+    },
+
+    async init() {
+        const [columns, read, order] = await Promise.all([
+            API.get(STORAGE_KEYS.COLUMNS),
+            API.get(STORAGE_KEYS.READ),
+            API.get(STORAGE_KEYS.ORDER)
+        ]);
+
+        this.state.columns = columns || [];
+        this.state.readItems = read || [];
+        this.state.order = order || [];
+    },
+
     getColumns() {
-        const data = localStorage.getItem(STORAGE_KEYS.COLUMNS);
-        return data ? JSON.parse(data) : [];
+        return this.state.columns;
     },
 
     saveColumns(columns) {
-        localStorage.setItem(STORAGE_KEYS.COLUMNS, JSON.stringify(columns));
-        this.checkStorageUsage();
+        this.state.columns = columns;
+        API.save(STORAGE_KEYS.COLUMNS, columns);
     },
 
     getReadItems() {
-        const data = localStorage.getItem(STORAGE_KEYS.READ);
-        return data ? JSON.parse(data) : [];
+        return this.state.readItems;
     },
 
     addReadItem(itemId) {
-        const readItems = this.getReadItems();
-        if (!readItems.includes(itemId)) {
-            readItems.push(itemId);
-            localStorage.setItem(STORAGE_KEYS.READ, JSON.stringify(readItems));
-            this.checkStorageUsage();
+        if (!this.state.readItems.includes(itemId)) {
+            this.state.readItems.push(itemId);
+            API.save(STORAGE_KEYS.READ, this.state.readItems);
         }
     },
 
     addReadItems(itemIds) {
-        const readItems = new Set(this.getReadItems());
+        const readItems = new Set(this.state.readItems);
         itemIds.forEach(id => readItems.add(id));
-        localStorage.setItem(STORAGE_KEYS.READ, JSON.stringify([...readItems]));
-        this.checkStorageUsage();
+        this.state.readItems = [...readItems];
+        API.save(STORAGE_KEYS.READ, this.state.readItems);
     },
 
     getCache() {
@@ -67,13 +107,12 @@ const Storage = {
     },
 
     getColumnOrder() {
-        const data = localStorage.getItem(STORAGE_KEYS.ORDER);
-        return data ? JSON.parse(data) : [];
+        return this.state.order;
     },
 
     saveColumnOrder(order) {
-        localStorage.setItem(STORAGE_KEYS.ORDER, JSON.stringify(order));
-        this.checkStorageUsage();
+        this.state.order = order;
+        API.save(STORAGE_KEYS.ORDER, order);
     },
 
     checkStorageUsage() {
@@ -88,10 +127,12 @@ const Storage = {
         const usage = total / maxSize;
         
         const warningEl = document.getElementById('storage-warning');
-        if (usage > STORAGE_WARNING_THRESHOLD) {
-            warningEl.classList.remove('hidden');
-        } else {
-            warningEl.classList.add('hidden');
+        if (warningEl) {
+            if (usage > STORAGE_WARNING_THRESHOLD) {
+                warningEl.classList.remove('hidden');
+            } else {
+                warningEl.classList.add('hidden');
+            }
         }
     }
 };
@@ -558,7 +599,8 @@ const Modal = {
     }
 };
 
-function init() {
+async function init() {
+    await Storage.init();
     Storage.checkStorageUsage();
     Events.init();
     DragDrop.init();
