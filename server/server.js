@@ -61,10 +61,10 @@ app.post('/api/storage/:key', async (req, res) => {
     try {
         await pool.query(
             `INSERT INTO user_storage (key, value) 
-             VALUES ($1, $2) 
+             VALUES ($1, $2::jsonb) 
              ON CONFLICT (key) 
-             DO UPDATE SET value = $2`,
-            [key, value]
+             DO UPDATE SET value = $2::jsonb`,
+            [key, JSON.stringify(value)]
         );
         res.json({ success: true });
     } catch (err) {
